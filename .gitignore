@@ -7,3 +7,10 @@ yarn-error.log
 .env
 /.ci/php-cs-fixer/vendor
 coverage.xml
+
+# Template file (temporary)
+env-template.txt
+
+# Youteller specific
+youteller-api/cursors/*
+!youteller-api/cursors/.gitkeep

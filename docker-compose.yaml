@@ -7,7 +7,6 @@ services:
     restart: always
     volumes:
       - firefly_iii_upload:/var/www/html/storage/upload
-      - ./firefly/html:/var/www/html
     env_file: .env
     networks:
       - youteller
@@ -37,6 +36,10 @@ services:
       dockerfile: ./youteller-api/Dockerfile
     ports:
       - 8000:8000
+    depends_on:
+      - app
+      - db
+    restart: always
 networks:
   youteller:
     name: youteller

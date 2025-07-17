@@ -27,10 +27,12 @@ class Plaid_Client:
         PLAID_ENV = os.getenv('PLAID_ENV')
 
         # Plaid Host Initialization
-        host = plaid.Environment.Development
-        if PLAID_ENV == 'development':
+        host = plaid.Environment.Sandbox
+        if PLAID_ENV == 'sandbox':
+            host = plaid.Environment.Sandbox
+        elif PLAID_ENV == 'development':
             host = plaid.Environment.Development
-        if PLAID_ENV == 'production':
+        elif PLAID_ENV == 'production':
             host = plaid.Environment.Production
 
         # Initialize Plaid cursor position on server load
@@ -105,7 +107,8 @@ class Plaid_Client:
 
         except plaid.ApiException as e:
             error_response = self.format_error(e)
-            return jsonify(error_response)
+            self.logger.error(f"Plaid API error: {error_response}")
+            return
 
         # Check if this is the first time syncing, if it is sync the balances through the Firefly_Client.py
         if first_time_sync:
@@ -131,7 +134,8 @@ class Plaid_Client:
                     return float(acc['balances']['current'])
         except plaid.ApiException as e:
             error_response = self.format_error(e)
-            return jsonify(error_response)
+            self.logger.error(f"Plaid API error: {error_response}")
+            return None
 
     def format_error(self, e):
         response = json.loads(e.body)

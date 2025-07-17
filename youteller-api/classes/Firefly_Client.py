@@ -4,7 +4,15 @@ import json
 import logging
 import requests
 from dotenv import load_dotenv
-from distutils.util import strtobool
+# Simple strtobool replacement since distutils is deprecated
+def strtobool(val):
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return True
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return False
+    else:
+        raise ValueError("invalid truth value %r" % (val,))
 
 class Firefly_Client:
     def __init__(self, portfolio):

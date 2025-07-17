@@ -8,9 +8,6 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 
-# Import portfolio module
-import Portfolio
-
 # Import classes
 import sys
 sys.path.append("classes")
@@ -32,20 +29,33 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
 logger.addHandler(handler)
 
-# Initiate Portfolio
-portfolio = Portfolio.Portfolio()
+# Simple account configuration - only your working Plaid account
+accounts = []
+
+# Only add the working bank account
+access_token = os.getenv('PLAID_BANK_1_ACCESS_TOKEN')
+if access_token and not access_token.startswith('access-development-your'):
+    account = {
+        'type': 'bank',
+        'access_token': os.getenv('PLAID_BANK_1_ACCESS_TOKEN'),
+        'pl_id': os.getenv('PLAID_BANK_1_ID'),
+        'ff_id': os.getenv('FF_BANK_1_ID'),
+        'ff_name': os.getenv('FF_BANK_1_NAME'),
+        'cursor': ''
+    }
+    accounts.append(account)
 
 # Initiate Plaid Controller
-plaid = Plaid_Client.Plaid_Client(portfolio.accounts)
+plaid = Plaid_Client.Plaid_Client(accounts)
 
 # Initiate Firefly Controller
-firefly = Firefly_Client.Firefly_Client(portfolio.accounts)
+firefly = Firefly_Client.Firefly_Client(accounts)
 
-# Endpoint used by Firefly III to sync transactions, new accounts will have their balances synced
+# Endpoint used by Firefly III to sync transactions
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
-    for account in portfolio.accounts:
-        # Currently this endpoint will only fetch Plaid transactions, validate on pl_id
+    for account in accounts:
+        # Only sync accounts with Plaid IDs
         if account['pl_id'] is not None:
             plaid.transaction_sync(account, firefly)
 

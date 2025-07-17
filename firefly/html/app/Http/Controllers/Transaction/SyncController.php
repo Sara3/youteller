@@ -48,9 +48,11 @@ class SyncController extends Controller
      *                                              */
     public function sync()
     {
+        $youtellerApiUrl = env('YOUTELLER_API_URL', 'http://youteller-api:8000');
+        
         $response = Http::withHeaders([
             'Accept' => 'application/json'
-        ])->get("http://192.168.0.161:8000/api/transactions");
+        ])->get($youtellerApiUrl . '/api/transactions');
 
         return redirect()->back();
     }
