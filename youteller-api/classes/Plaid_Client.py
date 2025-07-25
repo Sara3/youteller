@@ -39,15 +39,20 @@ class Plaid_Client:
         for account in portfolio:
             # Check if the account has a Plaid ID (note that some Plaid items do not have an account_id, for these set the PLAID_ID in .env to "no-id")
             if account['pl_id'] is not None:
+                # Ensure cursors directory exists
+                cursors_dir = "/opt/app/cursors"
+                if not os.path.exists(cursors_dir):
+                    os.makedirs(cursors_dir)
+                    
                 # Cursor positions are written to file using the FF_ID as the file name, if one does not exist it will be made in the /cursor/ folder which needs to exist
-                if not os.path.isfile(f"/opt/app/youteller-api/cursors/{account['ff_id']}"):
+                if not os.path.isfile(f"/opt/app/cursors/{account['ff_id']}"):
                     self.logger.info('Creating cursor files')
-                    file = open(f"/opt/app/youteller-api/cursors/{account['ff_id']}",'w')
+                    file = open(f"/opt/app/cursors/{account['ff_id']}",'w')
                     file.write('')
                     file.close()
                 # Read cursor position from file
                 self.logger.info('Reading cursor files')
-                file = open(f"/opt/app/youteller-api/cursors/{account['ff_id']}",'r')
+                file = open(f"/opt/app/cursors/{account['ff_id']}",'r')
                 account['cursor'] = file.read()
                 file.close()
 
@@ -101,7 +106,7 @@ class Plaid_Client:
                     oldest_transaction = firefly.process_transactions(response['added'], account, first_time_sync)
 
             # Write ending cursor position to file
-            file = open(f"/opt/app/youteller-api/cursors/{account['ff_id']}",'w')
+            file = open(f"/opt/app/cursors/{account['ff_id']}",'w')
             file.write(str(account['cursor']))
             file.close()
 

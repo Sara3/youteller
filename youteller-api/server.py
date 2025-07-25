@@ -29,6 +29,9 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
 logger.addHandler(handler)
 
+# Set up logging at the top
+logging.basicConfig(level=logging.INFO)
+
 # Simple account configuration - only your working Plaid account
 accounts = []
 
@@ -51,6 +54,10 @@ plaid = Plaid_Client.Plaid_Client(accounts)
 # Initiate Firefly Controller
 firefly = Firefly_Client.Firefly_Client(accounts)
 
+@app.route('/', methods=['GET'])
+def Hello():
+    return "Hello beautiful, this is the YouTeller API"
+
 # Endpoint used by Firefly III to sync transactions
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
@@ -58,6 +65,7 @@ def get_transactions():
         # Only sync accounts with Plaid IDs
         if account['pl_id'] is not None:
             plaid.transaction_sync(account, firefly)
+
 
     return "200"
 

@@ -29,6 +29,7 @@ services:
     env_file: ./youteller-api/.env
     volumes:
       - ./youteller-api:/opt/app/youteller-api
+      - ./cursors:/opt/app/cursors
     networks:
       - youteller
     build:

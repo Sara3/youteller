@@ -5,6 +5,7 @@ COPY ./youteller-api ./youteller-api
 WORKDIR /opt/app/youteller-api
 
 RUN pip3 install -r requirements.txt
+RUN mkdir -p /opt/app/youteller-api/cursors
 
 ENV FLASK_APP=/opt/app/youteller-api/server.py
 EXPOSE 8000
